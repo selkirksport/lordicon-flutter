@@ -44,16 +44,14 @@ class AssetProvider extends LottieProvider {
   final String? package;
 
   @override
-  Future<LottieComposition> load() {
+  Future<LottieComposition> load({BuildContext? context}) {
     return sharedLottieCache.putIfAbsent(this, () async {
       final chosenBundle = bundle ?? rootBundle;
 
       var data = handleJsonData(await chosenBundle.loadString(keyName));
       final iconData = Uint8List.fromList(utf8.encode(data));
 
-      var composition = await LottieComposition.fromBytes(iconData,
-          name: p.url.basenameWithoutExtension(keyName),
-          imageProviderFactory: imageProviderFactory);
+      var composition = await LottieComposition.fromBytes(iconData);
 
       return composition;
     });
@@ -82,7 +80,7 @@ class NetworkProvider extends LottieProvider {
   final Map<String, String>? headers;
 
   @override
-  Future<LottieComposition> load() {
+  Future<LottieComposition> load({BuildContext? context}) {
     return sharedLottieCache.putIfAbsent(this, () async {
       var resolved = Uri.base.resolve(url);
       var bytes = await network.loadHttp(resolved, headers: headers);
@@ -90,9 +88,7 @@ class NetworkProvider extends LottieProvider {
 
       final iconData = Uint8List.fromList(utf8.encode(data));
 
-      var composition = await LottieComposition.fromBytes(iconData,
-          name: p.url.basenameWithoutExtension(url),
-          imageProviderFactory: imageProviderFactory);
+      var composition = await LottieComposition.fromBytes(iconData);
 
       return composition;
     });
